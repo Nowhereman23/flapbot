@@ -4,7 +4,7 @@ Automatically jumps bird, to use copy+paste code below into javascript console:
 
 ```javascript
 var drawBars = true;
-var jumpOffset = 26;
+var jumpOffset = 27;
 var poleWidth = 300;
 var poleHeight = 512;
 var polePixelWidth = poleWidth * 4;
