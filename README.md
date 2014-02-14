@@ -1,5 +1,7 @@
 # FlapBot - [FlapMMO](http://flapmmo.com/) Bot
 
+![flapbot](http://zachhuff386.github.io/flapbot/video.gif)
+
 Automatically jumps bird, to use copy+paste code below into javascript console:
 
 ```javascript
