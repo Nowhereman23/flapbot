@@ -1,9 +1,11 @@
 var drawBars = true;
-var jumpOffset = 27;
-var poleWidth = 300;
+var jumpOffset = 26.5;
+var poleX = 115;
+var poleWidth = 180;
 var poleHeight = 512;
 var polePixelWidth = poleWidth * 4;
-var birdWidth = 115;
+var birdX = 90;
+var birdWidth = 12;
 var birdHeight = 512;
 var birdBar;
 var poleBar;
@@ -41,16 +43,19 @@ var startBot = function() {
     var i;
     var row;
     var col;
-    var data = ctx.getImageData(0, 0, birdWidth, birdHeight).data;
-    row = birdFound ? bird - 5 : 10;
+    var data = ctx.getImageData(birdX, 0, birdWidth, birdHeight).data;
+    row = birdFound ? Math.floor(bird) - 6 : 0;
+    if (jump) {
+      row -= 9;
+    }
     birdFound = false;
 
     for (; row < birdHeight; row++) {
-      for (col = 85; col < birdWidth; col++) {
+      for (col = 0; col < birdWidth; col++) {
         i = (row * birdWidth * 4) + (col * 4);
-        if (data[i] === 211 && data[i + 1] === 47 &&
+        if (data[i] === 252 && data[i + 1] === 56 &&
             data[i + 2] === 0 && data[i + 3] === 255) {
-          bird = Math.floor((i / 4) / birdWidth);
+          bird = (i / 4) / birdWidth;
           birdFound = true;
           break;
         }
@@ -58,25 +63,25 @@ var startBot = function() {
     }
 
     if (drawBars) {
-      birdBar.style.top = (50 + bird) + 'px';
+      birdBar.style.top = (50 + Math.floor(bird)) + 'px';
     }
     if (!jump && bird + jumpOffset > (pole || 256)) {
       jump = true;
       setTimeout(function() {
         jump = false;
-      }, 300);
+      }, 250);
       document.body.onkeydown();
     }
-  }, 5);
+  }, 4);
 
   poleInterval = setInterval(function() {
     var i;
     var row;
     var col;
-    var data = ctx.getImageData(0, 0, poleWidth, poleHeight).data;
+    var data = ctx.getImageData(poleX, 0, poleWidth, poleHeight).data;
 
-    for (row = 10; row < poleHeight; row++) {
-      for (col = 115; col < poleWidth; col++) {
+    for (row = 100; row < poleHeight; row++) {
+      for (col = 0; col < poleWidth; col++) {
         i = (row * poleWidth * 4) + (col * 4);
         if (data[i] === 84 && data[i + 1] === 56 &&
           data[i + 2] === 71 && data[i + 3] === 255 &&
@@ -84,13 +89,13 @@ var startBot = function() {
           data[i + polePixelWidth + 1] === 221 &&
           data[i + polePixelWidth + 2] === 113 &&
           data[i + polePixelWidth + 3] === 255) {
-          pole = Math.floor((i / 4) / poleWidth);
+          pole = (i / 4) / poleWidth;
           break;
         }
       }
     }
     if (drawBars) {
-      poleBar.style.top = (50 + pole) + 'px';
+      poleBar.style.top = (50 +  Math.floor(pole)) + 'px';
     }
   }, 500);
 };
