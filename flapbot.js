@@ -1,5 +1,5 @@
 var drawBars = true;
-var jumpOffset = 26.5;
+var jumpOffset = 28;
 var poleX = 115;
 var poleWidth = 180;
 var poleHeight = 512;
@@ -55,7 +55,7 @@ var startBot = function() {
         i = (row * birdWidth * 4) + (col * 4);
         if (data[i] === 252 && data[i + 1] === 56 &&
             data[i + 2] === 0 && data[i + 3] === 255) {
-          bird = (i / 4) / birdWidth;
+          bird = row;
           birdFound = true;
           break;
         }
@@ -89,7 +89,7 @@ var startBot = function() {
           data[i + polePixelWidth + 1] === 221 &&
           data[i + polePixelWidth + 2] === 113 &&
           data[i + polePixelWidth + 3] === 255) {
-          pole = (i / 4) / poleWidth;
+          pole = row;
           break;
         }
       }
