@@ -6,18 +6,31 @@ Automatically jumps bird, to use copy+paste code below into javascript console:
 
 ```javascript
 var drawBars = true;
-var jumpOffset = 28;
 var poleX = 115;
 var poleWidth = 180;
 var poleHeight = 512;
-var polePixelWidth = poleWidth * 4;
-var birdX = 90;
-var birdWidth = 12;
+var birdX;
+var birdWidth;
 var birdHeight = 512;
+var modeWidth = 300;
+var modeHeight = 512;
 var birdBar;
 var poleBar;
 var birdInterval;
 var poleInterval;
+var jumpOffset;
+var birdRedS;
+var birdRedE;
+var birdGrnS;
+var birdGrnE;
+var birdBluS;
+var birdBluE;
+var poleTopRed;
+var poleTopGrn;
+var poleTopBlu;
+var poleBotRed;
+var poleBotGrn;
+var poleBotBlu;
 var ctx = document.getElementById('canvas').getContext('2d');
 var center = document.getElementsByTagName('center')[0];
 
@@ -39,6 +52,67 @@ if (drawBars) {
   center.appendChild(poleBar);
 }
 
+var getMode = function() {
+  var i;
+  var row;
+  var col;
+  var mode = 'yellow';
+  var data = ctx.getImageData(0, 0, modeWidth, modeHeight).data;
+
+  for (row = 0; row < modeHeight; row++) {
+    for (col = 0; col < modeWidth; col++) {
+      i = (row * modeWidth * 4) + (col * 4);
+      if (data[i] === 122 && data[i + 1] === 198 &&
+          data[i + 2] === 53 && data[i + 3] === 255) {
+        mode = 'green';
+        break;
+      }
+    }
+  }
+
+  return mode;
+};
+
+if (getMode() === 'green') {
+  birdX = 94;
+  birdWidth = 12;
+  jumpOffset = 26;
+  birdRedS = 166;
+  birdRedE = 204;
+  birdGrnS = 38;
+  birdGrnE = 49;
+  birdBluS = 4;
+  birdBluE = 23;
+  poleTopRed = 3;
+  poleTopGrn = 3;
+  poleTopBlu = 3;
+  poleBotRed = 0;
+  poleBotGrn = 117;
+  poleBotBlu = 0;
+}
+else {
+  birdX = 96;
+  birdWidth = 8;
+  jumpOffset = 26;
+  birdRedS = 219;
+  birdRedE = 247;
+  birdGrnS = 61;
+  birdGrnE = 85;
+  birdBluS = 0;
+  birdBluE = 0;
+  poleTopRed = 0;
+  poleTopGrn = 0;
+  poleTopBlu = 0;
+  poleBotRed = 173;
+  poleBotGrn = 81;
+  poleBotBlu = 0;
+}
+
+var stopBot = function() {
+  clearInterval(birdInterval);
+  clearInterval(poleInterval);
+};
+
 var startBot = function() {
   stopBot();
   var pole;
@@ -51,7 +125,7 @@ var startBot = function() {
     var row;
     var col;
     var data = ctx.getImageData(birdX, 0, birdWidth, birdHeight).data;
-    row = birdFound ? Math.floor(bird) - 6 : 0;
+    row = birdFound ? bird - 6 : 0;
     if (jump) {
       row -= 9;
     }
@@ -60,8 +134,10 @@ var startBot = function() {
     for (; row < birdHeight; row++) {
       for (col = 0; col < birdWidth; col++) {
         i = (row * birdWidth * 4) + (col * 4);
-        if (data[i] === 252 && data[i + 1] === 56 &&
-            data[i + 2] === 0 && data[i + 3] === 255) {
+        if ((data[i] >= birdRedS && data[i] <= birdRedE) &&
+            (data[i + 1] >= birdGrnS && data[i + 1] <= birdGrnE) &&
+            (data[i + 2] >= birdBluS && data[i + 2] <= birdBluE) &&
+            data[i + 3] === 255) {
           bird = row;
           birdFound = true;
           break;
@@ -70,7 +146,7 @@ var startBot = function() {
     }
 
     if (drawBars) {
-      birdBar.style.top = (50 + Math.floor(bird)) + 'px';
+      birdBar.style.top = (50 + bird) + 'px';
     }
     if (!jump && bird + jumpOffset > (pole || 256)) {
       jump = true;
@@ -83,6 +159,7 @@ var startBot = function() {
 
   poleInterval = setInterval(function() {
     var i;
+    var j;
     var row;
     var col;
     var data = ctx.getImageData(poleX, 0, poleWidth, poleHeight).data;
@@ -90,26 +167,20 @@ var startBot = function() {
     for (row = 100; row < poleHeight; row++) {
       for (col = 0; col < poleWidth; col++) {
         i = (row * poleWidth * 4) + (col * 4);
-        if (data[i] === 84 && data[i + 1] === 56 &&
-          data[i + 2] === 71 && data[i + 3] === 255 &&
-          data[i + polePixelWidth] === 192 &&
-          data[i + polePixelWidth + 1] === 221 &&
-          data[i + polePixelWidth + 2] === 113 &&
-          data[i + polePixelWidth + 3] === 255) {
+        j = ((row + 1) * poleWidth * 4) + (col * 4);
+        if (data[i] === poleTopRed && data[i + 1] === poleTopGrn &&
+            data[i + 2] === poleTopBlu && data[i + 3] === 255 &&
+            data[j] === poleBotRed && data[j + 1] === poleBotGrn &&
+            data[j + 2] === poleBotBlu && data[j + 3] === 255) {
           pole = row;
           break;
         }
       }
     }
     if (drawBars) {
-      poleBar.style.top = (50 +  Math.floor(pole)) + 'px';
+      poleBar.style.top = (50 + pole) + 'px';
     }
   }, 500);
-};
-
-var stopBot = function() {
-  clearInterval(birdInterval);
-  clearInterval(poleInterval);
 };
 
 document.body.onkeyup = function(evt) {
