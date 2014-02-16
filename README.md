@@ -31,8 +31,9 @@ var poleTopBlu;
 var poleBotRed;
 var poleBotGrn;
 var poleBotBlu;
-var ctx = document.getElementById('canvas').getContext('2d');
-var center = document.getElementsByTagName('center')[0];
+var canvas = document.getElementById('canvas');
+var canvasWell = document.getElementsByClassName('well')[0];
+var ctx = canvas.getContext('2d');
 
 var msg = document.createElement('div');
 msg.innerText = 'Press "s" to start, "x" to stop';
@@ -42,17 +43,19 @@ document.body.appendChild(msg);
 
 if (drawBars) {
   birdBar = document.createElement('span');
-  birdBar.setAttribute('style', 'width: 50px; height: 2px; top: 449px; ' +
-    'margin-left: -366px; background-color: red; position: absolute;');
-  center.appendChild(birdBar);
+  birdBar.setAttribute('style', 'width: 50px; height: 2px; ' +
+    'margin-top: 3px; margin-left: 76px; background-color: red; ' +
+    'position: absolute;');
+  canvasWell.insertBefore(birdBar, canvas);
 
   poleBar = document.createElement('span');
-  poleBar.setAttribute('style', 'width: 50px; height: 2px; top: 449px; ' +
-    'margin-left: -311px; background-color: blue; position: absolute;');
-  center.appendChild(poleBar);
+  poleBar.setAttribute('style', 'width: 50px; height: 2px; ' +
+    'margin-top: 3px; margin-left: 136px; background-color: blue; ' +
+    'position: absolute;');
+  canvasWell.insertBefore(poleBar, canvas);
 }
 
-var getMode = function() {
+var setupMode = function() {
   var i;
   var row;
   var col;
@@ -70,43 +73,41 @@ var getMode = function() {
     }
   }
 
-  return mode;
+  if (mode === 'green') {
+    birdX = 94;
+    birdWidth = 12;
+    jumpOffset = 24;
+    birdRedS = 190;
+    birdRedE = 215;
+    birdGrnS = 40;
+    birdGrnE = 60;
+    birdBluS = 20;
+    birdBluE = 30;
+    poleTopRed = 3;
+    poleTopGrn = 3;
+    poleTopBlu = 3;
+    poleBotRed = 0;
+    poleBotGrn = 117;
+    poleBotBlu = 0;
+  }
+  else {
+    birdX = 96;
+    birdWidth = 8;
+    jumpOffset = 26;
+    birdRedS = 219;
+    birdRedE = 247;
+    birdGrnS = 61;
+    birdGrnE = 85;
+    birdBluS = 0;
+    birdBluE = 0;
+    poleTopRed = 0;
+    poleTopGrn = 0;
+    poleTopBlu = 0;
+    poleBotRed = 173;
+    poleBotGrn = 81;
+    poleBotBlu = 0;
+  }
 };
-
-if (getMode() === 'green') {
-  birdX = 94;
-  birdWidth = 12;
-  jumpOffset = 26;
-  birdRedS = 166;
-  birdRedE = 204;
-  birdGrnS = 38;
-  birdGrnE = 49;
-  birdBluS = 4;
-  birdBluE = 23;
-  poleTopRed = 3;
-  poleTopGrn = 3;
-  poleTopBlu = 3;
-  poleBotRed = 0;
-  poleBotGrn = 117;
-  poleBotBlu = 0;
-}
-else {
-  birdX = 96;
-  birdWidth = 8;
-  jumpOffset = 26;
-  birdRedS = 219;
-  birdRedE = 247;
-  birdGrnS = 61;
-  birdGrnE = 85;
-  birdBluS = 0;
-  birdBluE = 0;
-  poleTopRed = 0;
-  poleTopGrn = 0;
-  poleTopBlu = 0;
-  poleBotRed = 173;
-  poleBotGrn = 81;
-  poleBotBlu = 0;
-}
 
 var stopBot = function() {
   clearInterval(birdInterval);
@@ -114,11 +115,13 @@ var stopBot = function() {
 };
 
 var startBot = function() {
-  stopBot();
   var pole;
   var jump;
   var bird;
   var birdFound;
+
+  stopBot();
+  setupMode();
 
   birdInterval = setInterval(function() {
     var i;
@@ -146,7 +149,7 @@ var startBot = function() {
     }
 
     if (drawBars) {
-      birdBar.style.top = (50 + bird) + 'px';
+      birdBar.style.marginTop = (3 + bird) + 'px';
     }
     if (!jump && bird + jumpOffset > (pole || 256)) {
       jump = true;
@@ -178,7 +181,7 @@ var startBot = function() {
       }
     }
     if (drawBars) {
-      poleBar.style.top = (50 + pole) + 'px';
+      poleBar.style.marginTop = (3 + pole) + 'px';
     }
   }, 500);
 };
